@@ -1,9 +1,9 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    codex
-    codex-acp
-    claude-code
-    claude-agent-acp
+{inputs, pkgs, ...}: {
+  home.packages = [
+    pkgs.codex
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex-acp
+    pkgs.claude-code
+    pkgs.claude-agent-acp
   ];
 
   programs.zed-editor = {
@@ -127,6 +127,7 @@
       lsp = {
         roslyn.binary.arguments = ["--stdio" "autoLoadProjects"];
       };
+      load_direnv = "shell_hook";
     };
     extraPackages = [
 

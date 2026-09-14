@@ -1,4 +1,4 @@
-{...}: {
+{pkgs, ...}: {
   # Hide kptrs even for processes with CAP_SYSLOG
   boot.kernel.sysctl."kernel.kptr_restrict" = "2";
 
@@ -58,4 +58,15 @@
   };
 
   environment.memoryAllocator.provider = "graphene-hardened-light";
+
+  programs.firejail = {
+    enable = true;
+
+    wrappedBinaries.OmniSharp = {
+      executable = "${pkgs.omnisharp-roslyn}/bin/OmniSharp";
+      extraArgs = [
+        "--blacklist=/etc/ld-nix.so.preload"
+      ];
+    };
+  };
 }

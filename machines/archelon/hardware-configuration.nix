@@ -13,4 +13,20 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  boot.blacklistedKernelModules = [
+    "snd_acp70"
+    "snd_acp_pci"
+  ];
+
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+    wireplumber.extraConfig.no-ucm = {
+      "monitor.alsa.properties" = {
+        "alsa.use-ucm" = false;
+      };
+    };
+  };
 }
