@@ -60,7 +60,7 @@
       user.email = "p.bakker@daklab.nl";
       user.signingkey = "23212ECB3DD3A645";
       credential = {
-	helper = [ "cache --timeout=21600" "oauth" ];
+        helper = [ "cache --timeout=21600" "oauth" ];
       };
     };
 

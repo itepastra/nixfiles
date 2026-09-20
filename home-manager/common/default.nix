@@ -20,6 +20,7 @@
   home.packages = lib.optionals osConfig.profiles.graphical.enable [
     pkgs.nautilus
     pkgs.wl-clipboard
+    pkgs.swappy
   ];
 
   services.gnome-keyring.enable = true;

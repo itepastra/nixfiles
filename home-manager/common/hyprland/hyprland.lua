@@ -251,7 +251,7 @@ hl.window_rule({
 -- Browser popup -------------------------------------------------------------
 hl.window_rule({
 	name = "browser-popup",
-	match = { class = "^(chromium-browser-.*-Profile_.*)$" },
+	match = { class = "^(chrome-.*-Default)$" },
 	float = true,
 	move = { "cursor_x-(window_w*0.5)", "cursor_y-(window_h*0.5)" },
 })
@@ -288,7 +288,9 @@ hl.layer_rule({
 	name = "nwg-drawer",
 	match = { namespace = "^(nwg-drawer)$" },
 	blur = true,
+	dim_around = true,
 })
+
 hl.layer_rule({
 	name = "bm-sidebar",
 	match = { namespace = "^(bm-sidebar)$" },
