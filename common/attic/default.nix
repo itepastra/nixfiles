@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   inputs,
   config,
   ...
@@ -29,7 +30,7 @@ in
       fi
 
       echo "Built: $store_path"
-      sudo attic push anemone "$store_path"
+      sudo attic push anemone "$store_path" --ignore-upstream-cache-filter
 
       drv=$(nix path-info --derivation "$store_path")
       requisites=$(nix-store --query --requisites --include-outputs "$drv")
@@ -53,7 +54,7 @@ in
       fi
 
       requisites=$(echo "$paths" | tr ' ' '\n' | grep -v '^$' | while read -r p; do
-        drv=$(nix path-info --derivation "$p" 2>/dev/null)
+        drv=$(nix path-info --derivation "$p")
         if [ -n "$drv" ]; then
           nix-store --query --requisites --include-outputs "$drv"
         fi
@@ -61,7 +62,28 @@ in
 
       echo "$requisites" | sort -u | sudo xargs attic push --ignore-upstream-cache-filter anemone
     '')
+    (pkgs.writeShellScriptBin "nix-push" ''
+      requisites=""
 
+      for name in "$@"; do
+        # Build the derivation and get the output store path
+        store_paths=$(NIXPKGS_ALLOW_UNFREE=1 nix build --no-link --print-out-paths --impure -L "$name")
+        if [ -n "$store_paths" ]; then
+          while IFS= read -r store_path; do
+            reqs=$(nix-store --query --requisites "$store_path")
+            requisites="$requisites"$'\n'"$reqs"
+          done <<< "$store_paths"
+        else
+          echo "Warning: could not build '$name'" >&2
+        fi
+      done
+
+      if [ -z "$requisites" ]; then
+        echo "No requisites found, nothing to push." >&2
+        exit 1
+      fi
+
+      echo "$requisites" | sort -u | xargs sudo attic push --ignore-upstream-cache-filter anemone    '')
   ];
 
   systemd.tmpfiles.rules = [
@@ -76,8 +98,58 @@ in
     }"
   ];
 
-  nix.settings = {
-    substituters = [ "http://trench.reef/anemone?priority=10" ];
-    trusted-substituters = [ "http://trench.reef/anemone" ];
+  nix.extraOptions = ''
+    !include /etc/nix/nix.conf.d/10-attic.conf
+  '';
+
+  # configuration.nix
+  environment.etc."NetworkManager/dispatcher.d/99-nix-attic" = {
+    mode = "0755";
+    text = ''
+      #!${lib.getExe pkgs.bash}
+
+      HOME_SSID="niet-bestaand-netwerk"
+      CONF=/etc/nix/nix.conf.d/10-attic.conf
+      ATTIC_SUBSTITUTER="http://trench.reef/anemone?priority=10"
+      ATTIC_KEY="anemone:f/wBQ8yB5geTn96NjwRfbcoEvr8QuykN0iu0Rf2zUC8="
+
+      get_ssid() {
+        ${lib.getExe' pkgs.networkmanager "nmcli"} -g active,ssid dev wifi | grep "^yes:" | cut -d: -f2
+      }
+
+      vpn_active() {
+        ${lib.getExe' pkgs.iproute2 "ip"} link show reef0 &>/dev/null && ${lib.getExe' pkgs.iproute2 "ip"} link show reef0 | grep -q 'UP'
+      }
+
+      enable_cache() {
+        mkdir -p "$(dirname "$CONF")"
+        cat > "$CONF" <<EOF
+      extra-substituters = $ATTIC_SUBSTITUTER
+      extra-trusted-public-keys = $ATTIC_KEY
+      extra-trusted-substituters = http://trench.reef/anemone
+      EOF
+        ${lib.getExe' pkgs.systemd "systemctl"} restart nix-daemon
+      }
+
+      disable_cache() {
+        if [[ -f "$CONF" ]]; then
+          rm -f "$CONF"
+          ${lib.getExe' pkgs.systemd "systemctl"} restart nix-daemon
+        fi
+      }
+
+      case "$2" in
+        up|connectivity-change|vpn-up)
+          if [[ "$(get_ssid)" == "$HOME_SSID" ]] && vpn_active; then
+            enable_cache
+          else
+            disable_cache
+          fi
+          ;;
+        down|pre-down|vpn-down)
+          disable_cache
+          ;;
+      esac
+    '';
   };
 }
