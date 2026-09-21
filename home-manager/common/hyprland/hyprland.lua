@@ -68,7 +68,7 @@ hl.config({
 
 		blur = {
 			enabled = true,
-			size = 6,
+			size = 8,
 			passes = 3,
 			noise = 0,
 			xray = false,
@@ -244,14 +244,14 @@ hl.window_rule({
 -- Browser -------------------------------------------------------------------
 hl.window_rule({
 	name = "browser",
-	match = { class = "thorium-browser" },
+	match = { class = "chromium-browser" },
 	opaque = true,
 })
 
 -- Browser popup -------------------------------------------------------------
 hl.window_rule({
 	name = "browser-popup",
-	match = { class = "^(thorium-.*-Profile_.*)$" },
+	match = { class = "^(chrome-.*-Default)$" },
 	float = true,
 	move = { "cursor_x-(window_w*0.5)", "cursor_y-(window_h*0.5)" },
 })
@@ -288,7 +288,9 @@ hl.layer_rule({
 	name = "nwg-drawer",
 	match = { namespace = "^(nwg-drawer)$" },
 	blur = true,
+	dim_around = true,
 })
+
 hl.layer_rule({
 	name = "bm-sidebar",
 	match = { namespace = "^(bm-sidebar)$" },

@@ -58,16 +58,15 @@
     programs.git.settings = {
       user.name = "Pepijn Bakker";
       user.email = "p.bakker@daklab.nl";
-    };
-
-    programs.kitty.enable = osConfig.profiles.graphical.enable;
-    programs.zed-editor = {
-      enable = osConfig.profiles.graphical.enable;
-      defaultEditor = true;
+      user.signingkey = "23212ECB3DD3A645";
+      credential = {
+        helper = [ "cache --timeout=21600" "oauth" ];
+      };
     };
 
     home.packages = lib.optionals osConfig.profiles.graphical.enable [
       pkgs.teams-for-linux
+      pkgs.git-credential-oauth
     ];
 
     # Nicely reload system units when changing configs

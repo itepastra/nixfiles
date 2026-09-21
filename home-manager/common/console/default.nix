@@ -9,6 +9,11 @@
 }: {
   imports = [ ./bat ];
 
+  programs.direnv.enable = true;
+  programs.direnv.enableZshIntegration = true;
+
+  programs.gpg.enable = true;
+
   programs.zsh = {
     enable = true;
 
@@ -81,10 +86,10 @@
     };
   };
 
-  home.packages = with pkgs; [
-    killall
-    net-tools
-    dust
+  home.packages = [
+    pkgs.killall
+    pkgs.net-tools
+    pkgs.dust
     inputs.pepoapkgs.packages.${pkgs.stdenv.hostPlatform.system}.btop
   ];
 }

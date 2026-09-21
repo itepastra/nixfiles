@@ -51,8 +51,17 @@ hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/
 
 hl.config({
+    decoration = {
+        blur = {
+            enabled = true,
+        },
+        shadow = {
+            enabled = false,
+        },
+    },
+
     general = {
-        allow_tearing = false,
+        allow_tearing = true,
     },
 
     cursor = {
@@ -65,7 +74,7 @@ hl.config({
     },
 
     render = {
-        direct_scanout        = 1,
+        direct_scanout        = 0,
         new_render_scheduling = true,
     },
 

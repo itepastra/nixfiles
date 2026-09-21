@@ -1,27 +1,37 @@
-{...}: let
-  path-light = ./mononoke.png;
-  path-dark = ./mononoke-dark.png;
+{config, ...}: let
+  path-light = if config.home.username == "daklab" then
+    ./dakota-light.jpg
+  else
+    ./mononoke.png
+  ;
+  path-dark = if config.home.username == "daklab" then
+    ./dakota-dark.jpg
+  else
+    ./mononoke-dark.png
+  ;
 in
 {
-  services.darkman.scripts.hyprpaper = ''
-    case "$1" in
-    dark)
-      hyprctl hyprpaper wallpaper ",${path-dark}" || exit 0
-      ;;
-    light)
-      hyprctl hyprpaper wallpaper ",${path-light}" || exit 0
-      ;;
-    esac
-  '';
+  config = {
+    services.darkman.scripts.hyprpaper = ''
+      case "$1" in
+      dark)
+        hyprctl hyprpaper wallpaper ",${path-dark}" || exit 0
+        ;;
+      light)
+        hyprctl hyprpaper wallpaper ",${path-light}" || exit 0
+        ;;
+      esac
+    '';
 
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      splash = false;
-      preload = [ "${path-light}" "${path-dark}" ];
-      wallpaper = {
-        monitor = "";
-        path = "${path-dark}";
+    services.hyprpaper = {
+      enable = true;
+      settings = {
+        splash = false;
+        preload = [ "${path-light}" "${path-dark}" ];
+        wallpaper = {
+          monitor = "";
+          path = "${path-dark}";
+        };
       };
     };
   };

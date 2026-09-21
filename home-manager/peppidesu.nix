@@ -18,6 +18,7 @@
     ./common
   ] ++ lib.optionals osConfig.profiles.graphical.enable [
     ./common/discord
+    ./common/obsidian
   ];
 
   config = {
@@ -61,15 +62,6 @@
       pkgs.signal-desktop
       pkgs.teams-for-linux
     ];
-
-    # xdg desktop portal
-    xdg.portal = {
-      enable = true;
-      extraPortals = [
-        pkgs.xdg-desktop-portal-gtk
-      ];
-      config.common."org.freedesktop.impl.portal.Settings" = ["darkman"];
-    };
 
     # Nicely reload system units when changing configs
     systemd.user.startServices = "sd-switch";

@@ -26,6 +26,8 @@ moduleArgs@{
   ];
 
   peppidesu.greeter.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
+  virtualisation.docker.enable = true;
 
   nixpkgs = {
     # You can add overlays here
@@ -92,6 +94,13 @@ moduleArgs@{
   };
 
   programs.zsh.enable = true;
+  services.pcscd.enable = true;
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-curses;
+    enableSSHSupport = true;
+  };
+
   users.users = {
     peppidesu = {
       # TODO: You can set an initial password for your user.
@@ -116,7 +125,7 @@ moduleArgs@{
         # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
       ];
       # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
-      extraGroups = ["wheel" "networkmanager"];
+      extraGroups = ["wheel" "networkmanager" "docker"];
       shell = pkgs.zsh;
     };
   };
@@ -145,6 +154,9 @@ moduleArgs@{
   environment.systemPackages = [
     pkgs.fprintd
   ];
+  environment.sessionVariables = {
+    AQ_NO_MODIFIERS = "1";
+  };
   security.pam.services.greetd.fprintAuth = true;
   security.pam.services.gtklock = { };
 

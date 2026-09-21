@@ -17,11 +17,9 @@
     commandLineArgs = [
       "--ignore-gpu-blocklist"
       "--enable-gpu-rasterization"
-      "--enable-vulkan"
       "--enable-system-notifications"
       "--pdf-use-skia-renderer"
       "--enable-drdc"
-      "--skia-graphite"
     ];
   };
 }
