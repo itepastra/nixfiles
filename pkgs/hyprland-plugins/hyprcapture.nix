@@ -14,17 +14,19 @@
   nlohmann_json,
   pipewire,
   qt6,
+  libultrahdr,
+  opencv,
 }:
 
 mkHyprlandPlugin (finalAttrs: {
   pluginName = "hyprcapture";
-  version = "0.2.8-0.56.2";
+  version = "0.4.2-0.56.2";
 
   src = fetchFromGitHub {
     owner = "gfhdhytghd";
     repo = "HyprCapture";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-7OzlL6K2eqhMpOM73LO84O0JC/gLtQmDSs6i3mbYZEA=sha256-7OzlL6K2eqhMpOM73LO84O0JC/gLtQmDSs6i3mbYZEA=";
+    hash = "sha256-uTcUsV/sEkZ1TbAuto05eeVT2kQ++wkbs4a/5Pw3z3g=";
   };
 
   nativeBuildInputs = [
@@ -44,11 +46,14 @@ mkHyprlandPlugin (finalAttrs: {
     qt6.qtbase
     qt6.qtsvg
     qt6.qtwayland
+    libultrahdr
+    opencv
   ];
 
   cmakeFlags = [
     "-DHYPRCAPTURE_DEFAULT_HELPER_PATH=${placeholder "out"}/bin/hyprcapture-ui"
     "-DHYPRCAPTURE_TRUSTED_BIN_DIRS=${placeholder "out"}/bin"
+    "-DHYPRCAPTURE_GAINMAP_HEIC=OFF" # https://github.com/NixOS/nixpkgs/issues/573375
   ];
 
   dontStrip = true;
