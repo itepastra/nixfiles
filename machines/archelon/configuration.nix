@@ -210,6 +210,11 @@ moduleArgs@{
     '';
   };
 
+  age.secrets."attic/anemone" = {
+    file = ../../secrets/attic-anemone.age;
+    mode = "600";
+  };
+
   services.attic-toggler = {
     enable = true;
     token = config.age.secrets."attic/anemone".path;
